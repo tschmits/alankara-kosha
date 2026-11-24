@@ -209,6 +209,15 @@ export function count(q) {
   return total;
 }
 
+// De getoonde basisreeks (root): de eenheid verplaatst zodat hij op de madhya Sa (3) begint. Past dat niet binnen Ṗ..Ṁ, dan zo dicht mogelijk erbij.
+export function root(u) {
+  let d = 3 - u[0];
+  const lo = Math.min(...u) + d, hi = Math.max(...u) + d;
+  if (lo < 0) d -= lo;
+  else if (hi > MAX_POS) d -= hi - MAX_POS;
+  return u.map((x) => x + d);
+}
+
 // ---- uitgeschreven oefening (§4.7) ----
 
 // heen: eenheid + telkens één swar verder (max `cap` eenheden, stop bij de rand); terug: omgekeerd, per eenheid gespiegeld.

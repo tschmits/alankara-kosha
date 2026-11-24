@@ -1,4 +1,4 @@
-import { MAX_LEN, swar, searchAnywhere, randomSeq, fullExercise, dashed, parseSeq, formatSeq, parseSaved } from './model.js';
+import { MAX_LEN, swar, searchAnywhere, randomSeq, fullExercise, root, dashed, parseSeq, formatSeq, parseSaved } from './model.js';
 
 // De punt is een CSS-element: bij combinatietekens zit hij te dicht op de letter en is hij niet te verschuiven.
 const sw = (p) => (p < 3 || p > 9 ? `<i class="${p < 3 ? 'lo' : 'hi'}">${swar(p).normalize('NFD')[0]}</i>` : swar(p));
@@ -48,7 +48,7 @@ function card(unit, act, at = 0, len = 0) {
   const { heen, terug } = fullExercise(unit);
   // --w: geschatte breedte van de regel in em; het print-lettertype krimpt daarmee zodat heen en terug op één regel passen.
   const w = Math.ceil(0.8 * (heen.flat().length + heen.length - 1));
-  return `<li class="card"><header><span class="code">${dashed(unit)}</span><span class="unit">${sws(unit)}</span>${act}</header>
+  return `<li class="card"><header><span class="code">${dashed(unit)}</span><span class="unit">${sws(root(unit))}</span>${act}</header>
     <p class="line" style="--w:${w}"><b>${T.out}</b>${line(heen, at, len)}</p>
     <p class="line" style="--w:${w}"><b>${T.back}</b>${line(terug)}</p></li>`;
 }

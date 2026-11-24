@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  segCount, split, searchAnywhere, parseSaved, fullExercise, dashed, isValid, search, count, exercise, randomSeq, parseSeq, formatSeq, swars,
+  segCount, split, searchAnywhere, root, parseSaved, fullExercise, dashed, isValid, search, count, exercise, randomSeq, parseSeq, formatSeq, swars,
 } from '../model.js';
 
 const digits = (s) => [...s].map(Number);
@@ -139,4 +139,18 @@ test('verzameling: alleen geldige codes uit opslag', () => {
   assert.deepEqual(parseSaved('kapot'), []);
   assert.deepEqual(parseSaved(null), []);
   assert.deepEqual(parseSaved('{"a":1}'), []);
+});
+
+test('root: de basisreeks begint op de madhya Sa', () => {
+  assert.deepEqual(root([0, 1, 2]), [3, 4, 5]);
+  assert.deepEqual(root([1, 0, 2, 1, 3, 2]), [3, 2, 4, 3, 5, 4]);
+  assert.deepEqual(root([2, 1, 0]), [3, 2, 1]);
+  assert.equal(root([0, 5, 8])[0], 3);
+  // past niet (laagste noot zou onder Ṗ komen): zo dicht mogelijk, wel binnen het bereik
+  assert.deepEqual(root([8, 0]), [8, 0]);
+  for (const u of [[0], [5, 0], [8, 0], [0, 8], [3, 8, 0]]) {
+    const r = root(u);
+    assert.ok(Math.min(...r) >= 0 && Math.max(...r) <= 13, u.join());
+    assert.deepEqual(r.map((x, i) => x - u[i]).filter((d, i, a) => d !== a[0]), []); // alleen verschoven
+  }
 });
