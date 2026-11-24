@@ -1,5 +1,5 @@
 {
-  "name": "alankar-zoeker",
+  "name": "alankara-kosha",
   "private": true,
   "type": "module",
   "scripts": { "test": "node --test", "start": "python3 -m http.server 8080" }

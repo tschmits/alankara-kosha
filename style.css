@@ -17,7 +17,13 @@ body {
   padding: 0 max(16px, env(safe-area-inset-right)) env(safe-area-inset-bottom) max(16px, env(safe-area-inset-left));
 }
 main { max-width: 40rem; margin: 0 auto; padding-bottom: 3rem; }
-h1 { font-size: 1.1rem; margin: 1rem 0 .5rem; color: var(--muted); font-weight: 600; }
+.title { margin: 1rem 0 .75rem; text-align: center; }
+h1 { margin: 0; font-weight: 400; }
+.dev { display: block; font: 600 2rem/1.5 "Kohinoor Devanagari", "Noto Serif Devanagari", "Devanagari Sangam MN", "Mukta", serif; color: var(--accent); }
+.lat { display: block; font-size: .75rem; letter-spacing: .35em; text-transform: uppercase; color: var(--muted); }
+.orn { display: flex; align-items: center; gap: 10px; margin-top: .4rem; color: var(--accent); font-size: .9rem; }
+.orn::before, .orn::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--accent)); }
+.orn::after { transform: scaleX(-1); }
 button { font: inherit; color: inherit; touch-action: manipulation; -webkit-tap-highlight-color: transparent; user-select: none; }
 
 .seq-row { display: flex; gap: 8px; align-items: stretch; }

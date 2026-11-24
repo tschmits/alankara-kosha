@@ -7,7 +7,6 @@ const sws = (u) => u.map(sw).join('');
 // Alle teksten bij elkaar: taal wisselen (handover §8.6) = alleen dit object aanpassen.
 const T = {
   hint: 'Tap swar to build a sequence',
-  empty: 'Tap the swar above. You get up to 8 alankar that contain your sequence, simplest first. Every exercise starts on the lowest Ṗ and runs up to the upper Ṡ; your sequence is marked where it occurs. The link always holds your sequence, so you can share it.',
   none: 'No alankar with at most 3 segments fits this sequence.',
   out: 'Out', back: 'Back',
 };
@@ -41,7 +40,7 @@ function render() {
   $('seq').innerHTML = sws(q);
   history.replaceState(null, '', q.length ? `?s=${formatSeq(q)}` : location.pathname);
   const found = q.length ? searchAnywhere(q) : [];
-  $('results').innerHTML = !q.length ? `<p class="note">${T.empty}</p>`
+  $('results').innerHTML = !q.length ? ''
     : !found.length ? `<p class="note">${T.none}</p>`
     : `<ol>${found.map((r) => `<li class="card"><header><span class="code">${r.code}</span><span class="unit">${sws(r.unit)}</span></header>${variant(r.unit, r.at)}</li>`).join('')}</ol>`;
 }
