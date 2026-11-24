@@ -22,8 +22,9 @@ let q = parseSeq(new URLSearchParams(location.search).get('s'));
 let saved = [];
 try { saved = parseSaved(localStorage.getItem(KEY)); } catch { /* opslag geblokkeerd */ }
 const persist = () => { try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch { /* idem */ } };
-const svg = (d, size = 20) => `<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${d}"/></svg>`;
+const svg = (d, size = 16, fill = false) => `<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="${fill ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${d}"/></svg>`;
 const TRASH = svg('M4 6h16M9 6V4h6v2M6 6l1 14h10l1-14M10 10v6M14 10v6');
+const starSvg = (on) => svg('M12 3l2.7 5.8 6.3.8-4.6 4.4 1.2 6.3L12 17.2l-5.6 3.1 1.2-6.3L3 9.6l6.3-.8z', 16, on);
 const PRINTER = svg('M7 9V3h10v6M7 17H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2M7 14h10v7H7z');
 const toUnit = (c) => [...c].map(Number);
 
@@ -54,7 +55,7 @@ function card(unit, act, at = 0, len = 0) {
 
 const star = (c) => {
   const on = saved.includes(c);
-  return `<button type="button" class="act star" data-save="${c}" aria-pressed="${on}" aria-label="${on ? T.unsave : T.save}">${on ? '★' : '☆'}</button>`;
+  return `<button type="button" class="act star" data-save="${c}" aria-pressed="${on}" aria-label="${on ? T.unsave : T.save}">${starSvg(on)}</button>`;
 };
 
 // De URL bewaart de reeks (?s=…) en het actieve tabblad (#collection), zodat verversen op dezelfde plek blijft.

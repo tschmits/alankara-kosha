@@ -59,8 +59,10 @@ ol { list-style: none; padding: 0; margin: 0; }
 .note { color: var(--muted); }
 .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; margin: 0 0 10px; }
 .card > header { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; }
-.code { font: 600 1.1rem ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--accent); }
-.unit { font-size: 1.3rem; letter-spacing: .06em; }
+/* Code en eerste reeks zijn bijzaak: klein, de aaroh/awroh-regels zijn de inhoud. */
+/* De code staat boven het label (Aaroh/Awroh); de reeks begint op dezelfde plek als de swar eronder. Een lange code duwt de reeks naar rechts. */
+.code { font: 600 .6rem ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--accent); min-width: calc(3.6rem - 12px); }
+.unit { font-size: .6rem; letter-spacing: .06em; color: var(--accent); }
 .variant { margin-top: 8px; }
 .variant h3 { margin: 0; font-size: .8rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
 /* Vaste labelkolom + hangende inspringing: heen en terug beginnen op dezelfde plek, ook als een regel doorloopt. */
@@ -81,7 +83,10 @@ i.hi::after { top: -.18em; }
 .tabs { --tabline: color-mix(in srgb, var(--fg) 22%, var(--bg)); /* neutraal grijs: hoort niet bij de titelversiering */ display: flex; border-bottom: 1px solid var(--tabline); margin-bottom: 14px; }
 .tabs button { flex: 1; min-height: 42px; padding: 0; border: 1px solid transparent; border-bottom: 0; border-radius: 12px 12px 0 0; margin-bottom: -1px; background: none; color: var(--muted); font-size: .95rem; cursor: pointer; }
 .tabs button[aria-pressed="true"] { color: var(--accent); border-color: var(--tabline); background: var(--bg); }
-.card > header .act { margin-left: auto; align-self: center; width: 44px; height: 44px; border: 0; background: none; font-size: 1.5rem; color: var(--accent); cursor: pointer; }
+/* De knop (ster/prullenbak) steekt boven en onder de kop uit zonder hem hoger te maken: de kop blijft een kleine regel. */
+/* Knop (ster/prullenbak) in de hoek: icoon 16 px, afstand tot boven- en rechterrand identiek (9 px). */
+.card { position: relative; }
+.card > header .act { position: absolute; top: 3px; right: 3px; width: 28px; height: 28px; padding: 0; display: flex; align-items: center; justify-content: center; border: 0; background: none; color: var(--accent); cursor: pointer; }
 .card > header .act[data-remove] { color: var(--muted); }
 .card > header .act[data-remove]:hover { color: var(--accent); }
 .coll-tools { display: flex; gap: 8px; margin-bottom: 12px; }
@@ -104,24 +109,29 @@ i.hi::after { top: -.18em; }
 
 /* Papiertje: alleen de verzameling, zwart op wit, compact; heen en terug elk op één regel. */
 /* Marge deels via @page, deels via opvulling: kiest de gebruiker in het printvenster "Margins: None", dan blijft de opvulling staan. */
-@page { margin: 6mm; }
+@page { margin: 14mm 24mm; } /* de marge volgt het printvenster: Default = deze marge, None = tot de rand */ /* printers kunnen niet tot de rand: minstens 12 mm rondom, op elke pagina */
 @media print {
   /* Kleuren van de site op wit papier; donker genoeg om in zwart-wit goed leesbaar te blijven. */
   :root, :root * { --bg: #fff; --fg: #241c15; --card: #fff; --muted: #5f5042; --line: #b8a78f; --accent: #a63f14; }
-  body { background: #fff; color: var(--fg); padding: 10mm; }
+  body { background: #fff; color: var(--fg); padding: 0; }
+  main { padding-bottom: 0; }
   .tabs, #search-view, .coll-tools, .act, #guru-links { display: none !important; }
   .print-only { display: block; }
-  /* Footer compact, onderaan de (laatste) pagina zoals op de site: body is minstens paginahoog. */
-  body { min-height: 100vh; }
-  .foot { margin-top: auto; padding-top: 1.5mm; font-size: 4.5pt; line-height: 1.4; display: flex; flex-wrap: wrap; justify-content: center; gap: 0 1.6em; break-inside: avoid; }
+  /* Footer compact, direct onder de laatste alankar (de lijn van de laatste kaart scheidt al). */
+  body { min-height: 0; }
+  #coll-view { margin-bottom: 0; }
+  .foot { margin-top: 2mm; padding-top: 0; border-top: 0; font-size: 4.5pt; line-height: 1.4; display: flex; flex-wrap: wrap; justify-content: center; gap: 0 1.6em; break-inside: avoid; }
   .foot p { margin: 0; white-space: nowrap; }
+  .foot { break-before: avoid; }
+  #coll-view, #coll-list, .card:last-child { break-after: avoid; }
   .foot .print-only { flex-basis: 100%; text-align: center; }  /* de url op een eigen regel */
   .foot a, #guru { color: inherit; }
   .orn::before, .orn::after { background: none; height: 0; border-top: 1px solid var(--accent); } /* achtergronden worden niet geprint */
   #coll-view[hidden] { display: block !important; }
   .dev { font-size: 1.4rem; }
+  .code { min-width: calc(12mm - 12px); }
+  .code, .unit { font-size: 5.5pt; } /* bijzaak: duidelijk kleiner dan de aaroh/awroh-regels (8 pt) */
   .card { break-inside: avoid; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; padding: 5px 0; margin: 0; }
-  .code, .unit { font-size: 10pt; }
   .line { font-size: 8pt; line-height: 1.9; white-space: nowrap; margin: 0; container-type: inline-size; }
   .line { padding-left: 12mm; text-indent: -12mm; }
   .line b { font-size: 6.5pt; width: 12mm; }
