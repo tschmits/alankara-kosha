@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Alankar finder</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+  <h1>Alankar finder</h1>
+  <section class="seq-row">
+    <output id="seq" aria-live="polite"></output>
+    <button id="clear" type="button" aria-label="Clear sequence">✕</button>
+  </section>
+  <section id="keys" class="keys" aria-label="Swar"></section>
+  <button id="random" type="button" class="random">Random</button>
+  <section id="results" aria-live="polite"></section>
+</main>
+<script type="module" src="app.js"></script>
+</body>
+</html>
