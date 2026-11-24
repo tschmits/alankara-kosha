@@ -118,10 +118,11 @@ export function search(q, limit = MAX_RESULTS) {
 const WORK_BUDGET = 100000; // shortcut: vast aantal knopen (geen tijd) houdt de uitkomst voor iedereen gelijk; verhogen als treffers ontbreken
 const EDGE = TOP + 1; // aantal herhalingen waarna de heen-regel zeker stopt
 // De volledige oefening vanaf Ṗ tot en met Ṡ.
-// De laatste eenheid eindigt met zijn laatste noot op Ṡ. Past die eenheid dan niet binnen het bereik (hoogste noot > Ṁ), dan stopt de regel zo hoog als kan zonder boven Ṡ te komen.
+// De laatste eenheid eindigt met zijn laatste noot op Ṡ. Past die eenheid dan niet binnen het bereik (zijn hoogste noot zou boven Ṁ komen),
+// dan is de laatste eenheid die waarvan de hoogste noot op Ṁ valt (de bovenste toets, nog bespeelbaar op de fluit).
 export function fullExercise(u) {
   const last = u[u.length - 1], hi = Math.max(...u);
-  const k = hi + TOP - last <= MAX_POS ? TOP - last : TOP - hi;
+  const k = hi + TOP - last <= MAX_POS ? TOP - last : MAX_POS - hi;
   return exercise(u, 1, k + 1, MAX_POS);
 }
 const heenFlat = (u) => fullExercise(u).heen.flat();

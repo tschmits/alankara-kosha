@@ -123,8 +123,9 @@ test('overal in de heen-regel vanaf Ṗ', () => {
     assert.deepEqual(fullExercise(u).heen.at(-1), last, u.join(''));
     assert.deepEqual(fullExercise(u).heen[0], u);
   }
-  // past het niet binnen het bereik (laatste noot 0, hoogste 8): stopt op of onder Ṡ
-  assert.ok(Math.max(...fullExercise([8, 0]).heen.flat()) <= 10);
+  // eindigen op Ṡ past niet binnen het bereik: de laatste eenheid heeft zijn hoogste noot op Ṁ (13)
+  assert.deepEqual(fullExercise([0, 1, 2, 4, 3, 2, 1, 0]).heen.at(-1), [9, 10, 11, 13, 12, 11, 10, 9]); // SRGPMGRS
+  assert.equal(Math.max(...fullExercise([8, 0]).heen.flat()), 13);
   assert.deepEqual(searchAnywhere(parseSeq('3d0')), []); // sprong > 9 past nergens
   assert.equal(searchAnywhere(parseSeq('9'))[0].code, '0'); // N invoeren: resultaat 0 begint toch op Ṗ
   assert.equal(searchAnywhere(parseSeq('9'))[0].unit[0], 0);
