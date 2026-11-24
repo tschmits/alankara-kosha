@@ -152,12 +152,24 @@ function tierOf(parts, n, at, len) {
 }
 
 // Eerste `limit` oefeningen (laagste noot op Ṗ) waarvan de heen-regel q bevat.
-// Volgorde: eerst hoe q in de segmenten ligt (tier, zie tierOf), dan simpel -> complex (rank).
+// Volgorde: eerst de eenheid die precies q is, dan hoe q in de segmenten ligt (tier, zie tierOf), dan simpel -> complex (rank).
 // `at` = index van q in de uitgeschreven heen-regel (bij meerdere plekken de beste tier, dan de eerste).
 export function searchAnywhere(q, limit = MAX_RESULTS) {
   // Opeenvolgende noten in een heen-regel liggen tussen 8 lager en 9 hoger.
   if (!q.length || q.some((x, i) => x > TOP || (i && (x - q[i - 1] > 9 || q[i - 1] - x > 8)))) return [];
   const st = { budget: WORK_BUDGET }, pool = [];
+  // De eenheid die precies de ingetikte reeks is (zelfde patroon, laagste noot op Ṗ) staat altijd bovenaan, ook als simpelere eenheden dezelfde noten geven.
+  const shape = q.map((x) => x - Math.min(...q)), seen = new Set();
+  const consider = (u) => {
+    if (seen.has(u.join())) return;
+    seen.add(u.join());
+    const parts = split(u);
+    const hits = allAt(heenFlat(u), q).map((at) => ({ at, tier: tierOf(parts, u.length, at, q.length) }));
+    if (!hits.length) return;
+    const best = hits.reduce((a, h) => (h.tier < a.tier ? h : a));
+    pool.push({ unit: u, code: dashed(u), key: rank(u), at: best.at, tier: best.tier, exact: u.join() === shape.join() });
+  };
+  if (isValid(shape)) consider(shape);
   // Is q zelf één segment, dan kan tier 0 bestaan: zoek door tot er genoeg zijn. Anders is alles tier 2 en telt alleen de lengte.
   const wantTier = segCount(q) === 1 ? 0 : 2;
   const enough = () => pool.filter((c) => c.tier <= wantTier).length >= limit;
@@ -173,15 +185,9 @@ export function searchAnywhere(q, limit = MAX_RESULTS) {
       });
       if (ok) fill(fixed, n, st, (u) => { if (Math.min(...u) === 0) level.set(u.join(), u); });
     }
-    for (const u of level.values()) {
-      const parts = split(u);
-      const hits = allAt(heenFlat(u), q).map((at) => ({ at, tier: tierOf(parts, n, at, q.length) }));
-      if (!hits.length) continue;
-      const best = hits.reduce((a, h) => (h.tier < a.tier ? h : a));
-      pool.push({ unit: u, code: dashed(u), key: rank(u), at: best.at, tier: best.tier });
-    }
+    for (const u of level.values()) consider(u);
   }
-  pool.sort((a, b) => a.tier - b.tier || compareRank(a.key, b.key));
+  pool.sort((a, b) => b.exact - a.exact || a.tier - b.tier || compareRank(a.key, b.key));
   return pool.slice(0, limit).map(({ unit, code, at, tier }) => ({ unit, code, at, tier }));
 }
 

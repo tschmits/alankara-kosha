@@ -115,6 +115,9 @@ test('overal in de heen-regel vanaf Ṗ', () => {
   assert.deepEqual(srg.map((r) => r.tier), [...srg.map((r) => r.tier)].sort());
   assert.ok(srg.slice(0, 4).every((r) => r.tier === 0));
   assert.ok(searchAnywhere(parseSeq('3434')).every((r) => r.tier === 2)); // geen segment: alles over meerdere segmenten
+  // de eenheid die precies de reeks is staat bovenaan, ook als kortere eenheden dezelfde noten geven (DPNDSN: `10` geeft ze ook)
+  assert.equal(searchAnywhere(parseSeq('102132'))[0].code, '10-21-32');
+  assert.equal(searchAnywhere(parseSeq('546576'))[0].code, '10-21-32'); // zelfde patroon op andere hoogte
   assert.deepEqual(searchAnywhere(parseSeq('d')), []); // boven Ṡ komt geen oefening
   assert.deepEqual(fullExercise([0]).heen.at(-1), [10]); // eindigt op de taar Sa
   assert.deepEqual(searchAnywhere(parseSeq('3d0')), []); // sprong > 9 past nergens
