@@ -57,9 +57,13 @@ const star = (c) => {
   return `<button type="button" class="act star" data-save="${c}" aria-pressed="${on}" aria-label="${on ? T.unsave : T.save}">${on ? '★' : '☆'}</button>`;
 };
 
+// De URL bewaart de reeks (?s=…) en het actieve tabblad (#collection), zodat verversen op dezelfde plek blijft.
+let view = location.hash === '#collection' ? 'coll' : 'search';
+const syncUrl = () => history.replaceState(null, '', (q.length ? `?s=${formatSeq(q)}` : location.pathname) + (view === 'coll' ? '#collection' : ''));
+
 function render() {
   $('seq').innerHTML = sws(q);
-  history.replaceState(null, '', q.length ? `?s=${formatSeq(q)}` : location.pathname);
+  syncUrl();
   const found = q.length ? searchAnywhere(q) : [];
   $('results').innerHTML = !q.length ? ''
     : !found.length ? `<p class="note">${T.none}</p>`
@@ -74,11 +78,13 @@ function renderCollection() {
   $('coll-tools').hidden = !saved.length;
 }
 
-function show(view) {
-  $('search-view').hidden = view !== 'search';
-  $('coll-view').hidden = view !== 'coll';
-  document.querySelectorAll('[data-view]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.view === view));
-  if (view === 'coll') renderCollection();
+function show(v) {
+  view = v;
+  syncUrl();
+  $('search-view').hidden = v !== 'search';
+  $('coll-view').hidden = v !== 'coll';
+  document.querySelectorAll('[data-view]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.view === v));
+  if (v === 'coll') renderCollection();
 }
 
 document.addEventListener('click', (e) => {
@@ -106,3 +112,4 @@ document.addEventListener('click', (e) => {
 
 render();
 renderCollection();
+show(view);
