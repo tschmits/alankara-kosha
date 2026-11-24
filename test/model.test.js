@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  segCount, split, searchAnywhere, fullExercise, dashed, isValid, search, count, exercise, randomSeq, parseSeq, formatSeq, swars,
+  segCount, split, searchAnywhere, parseSaved, fullExercise, dashed, isValid, search, count, exercise, randomSeq, parseSeq, formatSeq, swars,
 } from '../model.js';
 
 const digits = (s) => [...s].map(Number);
@@ -123,4 +123,12 @@ test('overal in de heen-regel vanaf Ṗ', () => {
   const t = Date.now();
   for (let i = 0; i < 200; i++) assert.ok(searchAnywhere(randomSeq()).length >= 1);
   assert.ok(Date.now() - t < 5000);
+});
+
+test('verzameling: alleen geldige codes uit opslag', () => {
+  assert.deepEqual(parseSaved('["012","012","01-1","9","0123456789","1","<b>","01210212",5]'), ['012']);
+  assert.deepEqual(parseSaved('["0","01012"]'), ['0', '01012']);
+  assert.deepEqual(parseSaved('kapot'), []);
+  assert.deepEqual(parseSaved(null), []);
+  assert.deepEqual(parseSaved('{"a":1}'), []);
 });

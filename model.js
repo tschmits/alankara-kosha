@@ -227,3 +227,11 @@ export function randomSeq(rnd = Math.random) {
 // ?s=34345: één hexcijfer per swar; ongeldige tekens genegeerd, maximaal MAX_LEN.
 export const parseSeq = (s) => [...(s || '').toLowerCase()].filter((c) => /[0-9a-d]/.test(c)).slice(0, MAX_LEN).map((c) => parseInt(c, 16));
 export const formatSeq = (q) => q.map((p) => p.toString(16)).join('');
+
+// Opgeslagen verzameling: lijst codes (cijfers, laagste noot 0 = oefening vanaf Ṗ). Alles wat geen geldige code is, valt weg.
+export function parseSaved(json) {
+  let a;
+  try { a = JSON.parse(json); } catch { return []; }
+  const ok = (c) => typeof c === 'string' && /^[0-8]{1,27}$/.test(c) && isValid([...c].map(Number)) && c.includes('0');
+  return Array.isArray(a) ? [...new Set(a.filter(ok))] : [];
+}

@@ -57,18 +57,52 @@ ol { list-style: none; padding: 0; margin: 0; }
 .unit { font-size: 1.3rem; letter-spacing: .06em; }
 .variant { margin-top: 8px; }
 .variant h3 { margin: 0; font-size: .8rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
-.line { margin: 2px 0; font-size: 1.15rem; line-height: 1.9; }
-.line b { font-size: .7rem; font-weight: 600; color: var(--muted); text-transform: uppercase; margin-right: 6px; }
+/* Vaste labelkolom + hangende inspringing: heen en terug beginnen op dezelfde plek, ook als een regel doorloopt. */
+.line { margin: 2px 0; font-size: 1.15rem; line-height: 1.9; padding-left: 3.6rem; text-indent: -3.6rem; }
+.line > * { text-indent: 0; }
+.line b { display: inline-block; width: 3.6rem; font-size: .7rem; font-weight: 600; color: var(--muted); text-transform: uppercase; }
 .u { display: inline-block; white-space: nowrap; margin-right: .6em; }
 mark { background: color-mix(in srgb, var(--accent) 16%, transparent); color: inherit; }
 
 /* swar met punt: zie sw() in app.js */
 i { font-style: normal; line-height: 1; position: relative; display: inline-block; }
-i::after { content: ''; position: absolute; left: 50%; width: .12em; height: .12em; margin-left: -.06em; border-radius: 50%; background: currentColor; }
-i.lo::after { top: 1.02em; }
-i.hi::after { top: -.12em; }
+/* Rand i.p.v. achtergrond: achtergronden worden standaard niet geprint. */
+i::after { content: ''; position: absolute; left: 50%; width: 0; height: 0; margin-left: -.06em; border: .06em solid currentColor; border-radius: 50%; }
+i.lo::after { top: .96em; }
+i.hi::after { top: -.18em; }
+
+/* Tabbladen: een lijn onderlangs; het actieve blad is omlijnd met afgeronde bovenhoeken en staat open naar de inhoud. */
+.tabs { --tabline: color-mix(in srgb, var(--accent) 22%, var(--line)); display: flex; border-bottom: 1px solid var(--tabline); margin-bottom: 14px; }
+.tabs button { flex: 1; min-height: 42px; padding: 0; border: 1px solid transparent; border-bottom: 0; border-radius: 12px 12px 0 0; margin-bottom: -1px; background: none; color: var(--muted); font-size: .95rem; cursor: pointer; }
+.tabs button[aria-pressed="true"] { color: var(--accent); border-color: var(--tabline); background: var(--bg); }
+.card > header .act { margin-left: auto; align-self: center; width: 44px; height: 44px; border: 0; background: none; font-size: 1.5rem; color: var(--accent); cursor: pointer; }
+.card > header .act[data-remove] { color: var(--muted); }
+.card > header .act[data-remove]:hover { color: var(--accent); }
+.coll-tools { display: flex; gap: 8px; margin-bottom: 12px; }
+.coll-tools button { flex: 1; }
+.ghost { min-height: 52px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); font-size: 1.1rem; cursor: pointer; }
+[hidden] { display: none !important; }
 
 @media (min-width: 600px) {
   .keys button { min-height: 64px; font-size: 1.7rem; }
   .keys { gap: 8px; }
+}
+
+/* Papiertje: alleen de verzameling, zwart op wit, compact; heen en terug elk op één regel. */
+/* Marge deels via @page, deels via opvulling: kiest de gebruiker in het printvenster "Margins: None", dan blijft de opvulling staan. */
+@page { margin: 6mm; }
+@media print {
+  /* Kleuren van de site op wit papier; donker genoeg om in zwart-wit goed leesbaar te blijven. */
+  :root, :root * { --bg: #fff; --fg: #241c15; --card: #fff; --muted: #5f5042; --line: #b8a78f; --accent: #a63f14; }
+  body { background: #fff; color: var(--fg); padding: 10mm; }
+  .tabs, #search-view, .coll-tools, .act { display: none !important; }
+  .orn::before, .orn::after { background: none; height: 0; border-top: 1px solid var(--accent); } /* achtergronden worden niet geprint */
+  #coll-view[hidden] { display: block !important; }
+  .dev { font-size: 1.4rem; }
+  .card { break-inside: avoid; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; padding: 5px 0; margin: 0; }
+  .code, .unit { font-size: 10pt; }
+  .line { font-size: 8pt; line-height: 1.9; white-space: nowrap; margin: 0; container-type: inline-size; }
+  .line { padding-left: 12mm; text-indent: -12mm; }
+  .line b { font-size: 6.5pt; width: 12mm; }
+  .u { font-size: min(8pt, calc((100cqw - 2mm) / var(--w))); margin-right: .5em; }
 }

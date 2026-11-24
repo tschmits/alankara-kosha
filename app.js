@@ -1,4 +1,4 @@
-import { MAX_LEN, swar, searchAnywhere, randomSeq, fullExercise, parseSeq, formatSeq } from './model.js';
+import { MAX_LEN, swar, searchAnywhere, randomSeq, fullExercise, dashed, parseSeq, formatSeq, parseSaved } from './model.js';
 
 // De punt is een CSS-element: bij combinatietekens zit hij te dicht op de letter en is hij niet te verschuiven.
 const sw = (p) => (p < 3 || p > 9 ? `<i class="${p < 3 ? 'lo' : 'hi'}">${swar(p).normalize('NFD')[0]}</i>` : swar(p));
@@ -8,12 +8,23 @@ const sws = (u) => u.map(sw).join('');
 const T = {
   hint: 'Tap swar to build a sequence',
   none: 'No alankar with at most 3 segments fits this sequence.',
-  out: 'Out', back: 'Back',
+  out: 'Aaroh', back: 'Awroh',
+  save: 'Save to collection', unsave: 'Remove from collection', remove: 'Remove',
+  emptyColl: 'Your collection is empty. Tap ☆ on a result to save it.',
+  confirmAll: 'Clear the whole collection?',
 };
 
 const $ = (id) => document.getElementById(id);
 const NAMES = ['Sa', 'Re', 'Ga', 'Ma', 'Pa', 'Dha', 'Ni'];
+const KEY = 'alankara-kosha';
 let q = parseSeq(new URLSearchParams(location.search).get('s'));
+
+// Verzameling: lijst codes (cijfers) in localStorage; blijft alleen op dit apparaat. Zonder opslag werkt de site nog, maar bewaart niets.
+let saved = [];
+try { saved = parseSaved(localStorage.getItem(KEY)); } catch { /* opslag geblokkeerd */ }
+const persist = () => { try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch { /* idem */ } };
+const TRASH = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M9 6V4h6v2M6 6l1 14h10l1-14M10 10v6M14 10v6"/></svg>';
+const toUnit = (c) => [...c].map(Number);
 
 // Toetsen: positie 0..13 in twee rijen van 7.
 $('keys').innerHTML = Array.from({ length: 14 }, (_, p) => {
@@ -28,13 +39,20 @@ function line(units, from = 0, len = 0) {
   return units.map((v) => `<span class="u">${v.map((p) => (i++ >= from && i <= from + len ? `<mark>${sw(p)}</mark>` : sw(p))).join('')}</span>`).join(' ');
 }
 
-// Oefening vanaf Ṗ tot de rand; `at` = waar de ingevoerde reeks in de heen-regel staat.
-function variant(unit, at) {
+// Eén kaart: oefening vanaf Ṗ tot de rand; [at, at+len) = waar de ingevoerde reeks in de heen-regel staat (len 0 = niets markeren).
+function card(unit, act, at = 0, len = 0) {
   const { heen, terug } = fullExercise(unit);
-  return `<div class="variant">
-    <p class="line"><b>${T.out}</b>${line(heen, at, q.length)}</p>
-    <p class="line"><b>${T.back}</b>${line(terug)}</p></div>`;
+  // --w: geschatte breedte van de regel in em; het print-lettertype krimpt daarmee zodat heen en terug op één regel passen.
+  const w = Math.ceil(0.8 * (heen.flat().length + heen.length - 1));
+  return `<li class="card"><header><span class="code">${dashed(unit)}</span><span class="unit">${sws(unit)}</span>${act}</header>
+    <p class="line" style="--w:${w}"><b>${T.out}</b>${line(heen, at, len)}</p>
+    <p class="line" style="--w:${w}"><b>${T.back}</b>${line(terug)}</p></li>`;
 }
+
+const star = (c) => {
+  const on = saved.includes(c);
+  return `<button type="button" class="act star" data-save="${c}" aria-pressed="${on}" aria-label="${on ? T.unsave : T.save}">${on ? '★' : '☆'}</button>`;
+};
 
 function render() {
   $('seq').innerHTML = sws(q);
@@ -42,16 +60,45 @@ function render() {
   const found = q.length ? searchAnywhere(q) : [];
   $('results').innerHTML = !q.length ? ''
     : !found.length ? `<p class="note">${T.none}</p>`
-    : `<ol>${found.map((r) => `<li class="card"><header><span class="code">${r.code}</span><span class="unit">${sws(r.unit)}</span></header>${variant(r.unit, r.at)}</li>`).join('')}</ol>`;
+    : `<ol>${found.map((r) => card(r.unit, star(r.unit.join('')), r.at, q.length)).join('')}</ol>`;
 }
 
-$('keys').addEventListener('click', (e) => {
+function renderCollection() {
+  $('count').textContent = saved.length ? `(${saved.length})` : '';
+  $('coll-list').innerHTML = saved.length
+    ? saved.map((c) => card(toUnit(c), `<button type="button" class="act" data-remove="${c}" aria-label="${T.remove}">${TRASH}</button>`)).join('')
+    : `<p class="note">${T.emptyColl}</p>`;
+  $('coll-tools').hidden = !saved.length;
+}
+
+function show(view) {
+  $('search-view').hidden = view !== 'search';
+  $('coll-view').hidden = view !== 'coll';
+  document.querySelectorAll('[data-view]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.view === view));
+  if (view === 'coll') renderCollection();
+}
+
+document.addEventListener('click', (e) => {
   const b = e.target.closest('button');
-  if (!b || q.length >= MAX_LEN) return;
-  q.push(Number(b.dataset.p));
-  render();
+  if (!b) return;
+  if (b.dataset.p !== undefined) {
+    if (q.length < MAX_LEN) { q.push(Number(b.dataset.p)); render(); }
+  } else if (b.dataset.save) {
+    const c = b.dataset.save, on = saved.includes(c);
+    saved = on ? saved.filter((x) => x !== c) : [...saved, c];
+    persist();
+    b.outerHTML = star(c);
+    renderCollection();
+  } else if (b.dataset.remove) {
+    saved = saved.filter((x) => x !== b.dataset.remove);
+    persist();
+    renderCollection();
+  } else if (b.dataset.view) show(b.dataset.view);
+  else if (b.id === 'clear') { q = []; render(); }
+  else if (b.id === 'random') { q = randomSeq(); render(); }
+  else if (b.id === 'print') window.print();
+  else if (b.id === 'clear-all' && confirm(T.confirmAll)) { saved = []; persist(); renderCollection(); }
 });
-$('clear').addEventListener('click', () => { q = []; render(); });
-$('random').addEventListener('click', () => { q = randomSeq(); render(); });
 
 render();
+renderCollection();

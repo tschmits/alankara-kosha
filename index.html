@@ -13,13 +13,26 @@
     <h1><span class="dev" lang="sa">॥ अलङ्कारकोशः ॥</span><span class="lat">Alankara Kosha</span></h1>
     <div class="orn" aria-hidden="true">❖</div>
   </header>
-  <section class="seq-row">
-    <output id="seq" aria-live="polite"></output>
-    <button id="clear" type="button" aria-label="Clear sequence">✕</button>
-  </section>
-  <section id="keys" class="keys" aria-label="Swar"></section>
-  <button id="random" type="button" class="random">Random</button>
-  <section id="results" aria-live="polite"></section>
+  <nav class="tabs">
+    <button type="button" data-view="search" aria-pressed="true">Search</button>
+    <button type="button" data-view="coll" aria-pressed="false">Collection <span id="count"></span></button>
+  </nav>
+  <div id="search-view">
+    <section class="seq-row">
+      <output id="seq" aria-live="polite"></output>
+      <button id="clear" type="button" aria-label="Clear sequence">✕</button>
+    </section>
+    <section id="keys" class="keys" aria-label="Swar"></section>
+    <button id="random" type="button" class="random">Random</button>
+    <section id="results" aria-live="polite"></section>
+  </div>
+  <div id="coll-view" hidden>
+    <div id="coll-tools" class="coll-tools">
+      <button id="print" type="button" class="random">Print</button>
+      <button id="clear-all" type="button" class="ghost">Clear collection</button>
+    </div>
+    <ol id="coll-list"></ol>
+  </div>
 </main>
 <script type="module" src="app.js"></script>
 </body>
