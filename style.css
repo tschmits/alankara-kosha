@@ -111,11 +111,11 @@ i.hi::after { top: -.18em; }
   body { background: #fff; color: var(--fg); padding: 10mm; }
   .tabs, #search-view, .coll-tools, .act, #guru-links { display: none !important; }
   .print-only { display: block; }
-  /* Footer op één regel, onderaan de (laatste) pagina zoals op de site: body is minstens paginahoog. */
+  /* Footer compact, onderaan de (laatste) pagina zoals op de site: body is minstens paginahoog. */
   body { min-height: 100vh; }
-  .foot { margin-top: auto; padding-top: 1.5mm; font-size: 4.5pt; line-height: 1.2; white-space: nowrap; display: flex; justify-content: center; gap: 0 1.2em; break-inside: avoid; }
-  .foot p { margin: 0; }
-  .foot p + p::before { content: '·'; margin-right: 1.2em; }
+  .foot { margin-top: auto; padding-top: 1.5mm; font-size: 4.5pt; line-height: 1.4; display: flex; flex-wrap: wrap; justify-content: center; gap: 0 1.6em; break-inside: avoid; }
+  .foot p { margin: 0; white-space: nowrap; }
+  .foot .print-only { flex-basis: 100%; text-align: center; }  /* de url op een eigen regel */
   .foot a, #guru { color: inherit; }
   .orn::before, .orn::after { background: none; height: 0; border-top: 1px solid var(--accent); } /* achtergronden worden niet geprint */
   #coll-view[hidden] { display: block !important; }
