@@ -118,8 +118,13 @@ test('overal in de heen-regel vanaf Ṗ', () => {
   // de eenheid die precies de reeks is staat bovenaan, ook als kortere eenheden dezelfde noten geven (DPNDSN: `10` geeft ze ook)
   assert.equal(searchAnywhere(parseSeq('102132'))[0].code, '10-21-32');
   assert.equal(searchAnywhere(parseSeq('546576'))[0].code, '10-21-32'); // zelfde patroon op andere hoogte
-  assert.deepEqual(searchAnywhere(parseSeq('d')), []); // boven Ṡ komt geen oefening
-  assert.deepEqual(fullExercise([0]).heen.at(-1), [10]); // eindigt op de taar Sa
+  // de laatste eenheid eindigt op de taar Sa (10), ook als de eenheid zelf hoger reikt
+  for (const [u, last] of [[[0], [10]], [[0, 1, 2], [8, 9, 10]], [[3, 0], [13, 10]], [[0, 2, 1], [9, 11, 10]]]) {
+    assert.deepEqual(fullExercise(u).heen.at(-1), last, u.join(''));
+    assert.deepEqual(fullExercise(u).heen[0], u);
+  }
+  // past het niet binnen het bereik (laatste noot 0, hoogste 8): stopt op of onder Ṡ
+  assert.ok(Math.max(...fullExercise([8, 0]).heen.flat()) <= 10);
   assert.deepEqual(searchAnywhere(parseSeq('3d0')), []); // sprong > 9 past nergens
   assert.equal(searchAnywhere(parseSeq('9'))[0].code, '0'); // N invoeren: resultaat 0 begint toch op Ṗ
   assert.equal(searchAnywhere(parseSeq('9'))[0].unit[0], 0);

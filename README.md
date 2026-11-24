@@ -9,7 +9,7 @@ Tap a few swar and Alankara Kosha shows up to 8 exercises that contain your sequ
 ## Features
 
 - **Swar keys** for fourteen notes, from mandra Pa to taar Ma (Ṗ Ḍ Ṇ S R G M P D N Ṡ Ṙ Ġ Ṁ).
-- **Search anywhere in the exercise.** Every result is written out as *aaroh* (up) and *awroh* (down), starting on the lowest Ṗ and running up to the upper Ṡ. Your sequence is highlighted where it occurs.
+- **Search anywhere in the exercise.** Every result is written out as *aaroh* (up) and *awroh* (down), starting on the lowest Ṗ and ending on the upper Ṡ (the last unit ends on Ṡ). Your sequence is highlighted where it occurs.
 - **Ordering:** results where your sequence is exactly one segment of the alankar come first, then those inside a segment, then those spanning several segments. Within a group, shorter and simpler alankar come first.
 - **Share by link.** The sequence is in the URL (`?s=34345` is S R S R G), so the same link shows the same results on any device.
 - **Collection.** Save results with ☆, remove them one by one or clear everything. The collection lives in your browser's `localStorage`; nothing is sent anywhere.

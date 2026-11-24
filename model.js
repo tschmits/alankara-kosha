@@ -2,7 +2,7 @@
 // Posities 0..13 = Ṗ Ḍ Ṇ S R G M P D N Ṡ Ṙ Ġ Ṁ.
 
 export const MAX_POS = 13;
-export const TOP = 10; // oefeningen vanaf Ṗ eindigen op de taar Sa (Ṡ)
+export const TOP = 10; // de taar Sa (Ṡ): de laatste eenheid van een oefening eindigt hierop
 export const MAX_LEN = 32; // maximale reekslengte (§4.9)
 const MAX_RANGE = 8; // hoogste min laagste binnen een eenheid
 const MAX_SEGS = 3;
@@ -118,7 +118,12 @@ export function search(q, limit = MAX_RESULTS) {
 const WORK_BUDGET = 100000; // shortcut: vast aantal knopen (geen tijd) houdt de uitkomst voor iedereen gelijk; verhogen als treffers ontbreken
 const EDGE = TOP + 1; // aantal herhalingen waarna de heen-regel zeker stopt
 // De volledige oefening vanaf Ṗ tot en met Ṡ.
-export const fullExercise = (u) => exercise(u, 1, EDGE, TOP);
+// De laatste eenheid eindigt met zijn laatste noot op Ṡ. Past die eenheid dan niet binnen het bereik (hoogste noot > Ṁ), dan stopt de regel zo hoog als kan zonder boven Ṡ te komen.
+export function fullExercise(u) {
+  const last = u[u.length - 1], hi = Math.max(...u);
+  const k = hi + TOP - last <= MAX_POS ? TOP - last : TOP - hi;
+  return exercise(u, 1, k + 1, MAX_POS);
+}
 const heenFlat = (u) => fullExercise(u).heen.flat();
 const allAt = (s, q) => { const r = []; for (let i = 0; i + q.length <= s.length; i++) if (q.every((x, j) => s[i + j] === x)) r.push(i); return r; };
 const LOW = Array.from({ length: MAX_RANGE + 1 }, (_, p) => p);
@@ -156,7 +161,7 @@ function tierOf(parts, n, at, len) {
 // `at` = index van q in de uitgeschreven heen-regel (bij meerdere plekken de beste tier, dan de eerste).
 export function searchAnywhere(q, limit = MAX_RESULTS) {
   // Opeenvolgende noten in een heen-regel liggen tussen 8 lager en 9 hoger.
-  if (!q.length || q.some((x, i) => x > TOP || (i && (x - q[i - 1] > 9 || q[i - 1] - x > 8)))) return [];
+  if (!q.length || q.some((x, i) => x > MAX_POS || (i && (x - q[i - 1] > 9 || q[i - 1] - x > 8)))) return [];
   const st = { budget: WORK_BUDGET }, pool = [];
   // De eenheid die precies de ingetikte reeks is (zelfde patroon, laagste noot op Ṗ) staat altijd bovenaan, ook als simpelere eenheden dezelfde noten geven.
   const shape = q.map((x) => x - Math.min(...q)), seen = new Set();
