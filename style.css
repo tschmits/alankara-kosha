@@ -16,7 +16,10 @@ body {
   font: 16px/1.5 "Helvetica Neue", Arial, "Segoe UI", Roboto, "Noto Sans", sans-serif;
   padding: 0 max(16px, env(safe-area-inset-right)) env(safe-area-inset-bottom) max(16px, env(safe-area-inset-left));
 }
-main { max-width: 40rem; margin: 0 auto; padding-bottom: 3rem; }
+/* Footer altijd onderaan: body is minstens schermhoog, de ruimte tussen inhoud en footer is vullend. */
+body { min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; }
+main { width: 100%; max-width: 40rem; margin: 0 auto; padding-bottom: 1.5rem; flex: 1; display: flex; flex-direction: column; }
+#search-view, #coll-view { margin-bottom: 3rem; }
 .title { margin: 1rem 0 1.5rem; text-align: center; }
 h1 { margin: 0; font-weight: 400; }
 .dev { display: block; font: 600 2rem/1.5 "Kohinoor Devanagari", "Noto Serif Devanagari", "Devanagari Sangam MN", "Mukta", serif; color: var(--accent); }
@@ -83,7 +86,7 @@ i.hi::after { top: -.18em; }
 .ghost { min-height: 52px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); font-size: 1.1rem; cursor: pointer; }
 [hidden] { display: none !important; }
 
-.foot { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--line); text-align: center; font-size: .78rem; color: color-mix(in srgb, var(--muted) 70%, var(--bg)); }
+.foot { margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--line); text-align: center; font-size: .78rem; color: color-mix(in srgb, var(--muted) 70%, var(--bg)); }
 .foot p { margin: .3rem 0; }
 .foot a { color: inherit; text-decoration-color: color-mix(in srgb, currentColor 40%, transparent); }
 #guru { padding: 0; border: 0; background: none; font: inherit; color: color-mix(in srgb, var(--accent) 60%, var(--muted)); text-decoration: underline dotted; text-underline-offset: 3px; cursor: pointer; }

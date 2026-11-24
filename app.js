@@ -11,7 +11,6 @@ const T = {
   out: 'Aaroh', back: 'Awroh',
   save: 'Save to collection', unsave: 'Remove from collection', remove: 'Remove',
   emptyColl: 'Your collection is empty. Tap ☆ on a result to save it.',
-  confirmAll: 'Clear the whole collection?',
 };
 
 const $ = (id) => document.getElementById(id);
@@ -102,7 +101,7 @@ document.addEventListener('click', (e) => {
   else if (b.id === 'clear') { q = []; render(); }
   else if (b.id === 'random') { q = randomSeq(); render(); }
   else if (b.id === 'print') window.print();
-  else if (b.id === 'clear-all' && confirm(T.confirmAll)) { saved = []; persist(); renderCollection(); }
+  else if (b.id === 'clear-all') { saved = []; persist(); renderCollection(); }
 });
 
 render();
