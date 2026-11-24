@@ -83,6 +83,13 @@ i.hi::after { top: -.18em; }
 .ghost { min-height: 52px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); font-size: 1.1rem; cursor: pointer; }
 [hidden] { display: none !important; }
 
+.foot { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--line); text-align: center; font-size: .78rem; color: color-mix(in srgb, var(--muted) 70%, var(--bg)); }
+.foot p { margin: .3rem 0; }
+.foot a { color: inherit; text-decoration-color: color-mix(in srgb, currentColor 40%, transparent); }
+#guru { padding: 0; border: 0; background: none; font: inherit; color: color-mix(in srgb, var(--accent) 60%, var(--muted)); text-decoration: underline dotted; text-underline-offset: 3px; cursor: pointer; }
+#guru-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 16px; list-style: none; margin: .6rem 0 0; padding: 0; }
+#guru-links a { color: color-mix(in srgb, var(--accent) 60%, var(--muted)); }
+
 @media (min-width: 600px) {
   .keys button { min-height: 64px; font-size: 1.7rem; }
   .keys { gap: 8px; }
@@ -95,7 +102,7 @@ i.hi::after { top: -.18em; }
   /* Kleuren van de site op wit papier; donker genoeg om in zwart-wit goed leesbaar te blijven. */
   :root, :root * { --bg: #fff; --fg: #241c15; --card: #fff; --muted: #5f5042; --line: #b8a78f; --accent: #a63f14; }
   body { background: #fff; color: var(--fg); padding: 10mm; }
-  .tabs, #search-view, .coll-tools, .act { display: none !important; }
+  .tabs, #search-view, .coll-tools, .act, .foot { display: none !important; }
   .orn::before, .orn::after { background: none; height: 0; border-top: 1px solid var(--accent); } /* achtergronden worden niet geprint */
   #coll-view[hidden] { display: block !important; }
   .dev { font-size: 1.4rem; }

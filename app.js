@@ -98,6 +98,7 @@ document.addEventListener('click', (e) => {
     persist();
     renderCollection();
   } else if (b.dataset.view) show(b.dataset.view);
+  else if (b.id === 'guru') { const l = $('guru-links'); l.hidden = !l.hidden; b.setAttribute('aria-expanded', !l.hidden); }
   else if (b.id === 'clear') { q = []; render(); }
   else if (b.id === 'random') { q = randomSeq(); render(); }
   else if (b.id === 'print') window.print();
