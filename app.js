@@ -23,7 +23,9 @@ let q = parseSeq(new URLSearchParams(location.search).get('s'));
 let saved = [];
 try { saved = parseSaved(localStorage.getItem(KEY)); } catch { /* opslag geblokkeerd */ }
 const persist = () => { try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch { /* idem */ } };
-const TRASH = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M9 6V4h6v2M6 6l1 14h10l1-14M10 10v6M14 10v6"/></svg>';
+const svg = (d, size = 20) => `<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${d}"/></svg>`;
+const TRASH = svg('M4 6h16M9 6V4h6v2M6 6l1 14h10l1-14M10 10v6M14 10v6');
+const PRINTER = svg('M7 9V3h10v6M7 17H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2M7 14h10v7H7z');
 const toUnit = (c) => [...c].map(Number);
 
 // Toetsen: positie 0..13 in twee rijen van 7.
@@ -32,6 +34,8 @@ $('keys').innerHTML = Array.from({ length: 14 }, (_, p) => {
   return `<button type="button" data-p="${p}" class="${oct}" aria-label="${NAMES[(p + 4) % 7]} ${oct}">${sw(p)}</button>`;
 }).join('');
 $('seq').dataset.hint = T.hint;
+$('print').insertAdjacentHTML('afterbegin', PRINTER);
+$('clear-all').insertAdjacentHTML('afterbegin', TRASH);
 
 // Markeert de noten [from, from+len) van de regel: de reeks die de gebruiker heeft aangetikt.
 function line(units, from = 0, len = 0) {

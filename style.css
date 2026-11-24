@@ -17,11 +17,11 @@ body {
   padding: 0 max(16px, env(safe-area-inset-right)) env(safe-area-inset-bottom) max(16px, env(safe-area-inset-left));
 }
 main { max-width: 40rem; margin: 0 auto; padding-bottom: 3rem; }
-.title { margin: 1rem 0 .75rem; text-align: center; }
+.title { margin: 1rem 0 1.5rem; text-align: center; }
 h1 { margin: 0; font-weight: 400; }
 .dev { display: block; font: 600 2rem/1.5 "Kohinoor Devanagari", "Noto Serif Devanagari", "Devanagari Sangam MN", "Mukta", serif; color: var(--accent); }
 .lat { display: block; font-size: .75rem; letter-spacing: .35em; text-transform: uppercase; color: var(--muted); }
-.orn { display: flex; align-items: center; gap: 10px; margin-top: .4rem; color: var(--accent); font-size: .9rem; }
+.orn { display: flex; align-items: center; gap: 10px; margin: .4rem auto 0; max-width: 13rem; color: var(--accent); font-size: .9rem; }
 .orn::before, .orn::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--accent)); }
 .orn::after { transform: scaleX(-1); }
 button { font: inherit; color: inherit; touch-action: manipulation; -webkit-tap-highlight-color: transparent; user-select: none; }
@@ -72,14 +72,14 @@ i.lo::after { top: .96em; }
 i.hi::after { top: -.18em; }
 
 /* Tabbladen: een lijn onderlangs; het actieve blad is omlijnd met afgeronde bovenhoeken en staat open naar de inhoud. */
-.tabs { --tabline: color-mix(in srgb, var(--accent) 22%, var(--line)); display: flex; border-bottom: 1px solid var(--tabline); margin-bottom: 14px; }
+.tabs { --tabline: color-mix(in srgb, var(--fg) 22%, var(--bg)); /* neutraal grijs: hoort niet bij de titelversiering */ display: flex; border-bottom: 1px solid var(--tabline); margin-bottom: 14px; }
 .tabs button { flex: 1; min-height: 42px; padding: 0; border: 1px solid transparent; border-bottom: 0; border-radius: 12px 12px 0 0; margin-bottom: -1px; background: none; color: var(--muted); font-size: .95rem; cursor: pointer; }
 .tabs button[aria-pressed="true"] { color: var(--accent); border-color: var(--tabline); background: var(--bg); }
 .card > header .act { margin-left: auto; align-self: center; width: 44px; height: 44px; border: 0; background: none; font-size: 1.5rem; color: var(--accent); cursor: pointer; }
 .card > header .act[data-remove] { color: var(--muted); }
 .card > header .act[data-remove]:hover { color: var(--accent); }
 .coll-tools { display: flex; gap: 8px; margin-bottom: 12px; }
-.coll-tools button { flex: 1; }
+.coll-tools button { flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; }
 .ghost { min-height: 52px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); font-size: 1.1rem; cursor: pointer; }
 [hidden] { display: none !important; }
 
