@@ -51,8 +51,8 @@ button { font: inherit; color: inherit; touch-action: manipulation; -webkit-tap-
   font-size: 1.1rem; font-weight: 600; cursor: pointer;
 }
 
-/* Random is een zachte actie: getinte vulling en accenttekst i.p.v. een vol oranje vlak (Print blijft de hoofdactie). */
-#random { background: color-mix(in srgb, var(--accent) 14%, var(--card)); color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 32%, var(--line)); font-weight: 500; }
+/* Random en Print zijn zachte acties: getinte vulling en accenttekst i.p.v. een vol oranje vlak. */
+#random, #print { background: color-mix(in srgb, var(--accent) 14%, var(--card)); color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 32%, var(--line)); font-weight: 500; }
 
 #results { margin-top: 1rem; }
 ol { list-style: none; padding: 0; margin: 0; }
