@@ -1,18 +1,19 @@
 /* Mobile first: alles staat op telefoonbreedte; pas vanaf 600px een bredere kolom. */
 :root {
   --bg: #fbf7f0; --fg: #241c15; --muted: #7a6c5d; --card: #fff; --line: #e4d9c8;
-  --key: #fff; --key-mandra: #efe3d0; --key-taar: #e3ecf3; --accent: #b4491c; --mark: #ffe08a;
+  --key: #fff; --accent: #b4491c;
 }
 @media (prefers-color-scheme: dark) {
   :root {
     --bg: #17120d; --fg: #f1e8da; --muted: #a8998a; --card: #241c15; --line: #3a2f25;
-    --key: #2b2218; --key-mandra: #3a2c1c; --key-taar: #1f2d38; --accent: #f08a5d; --mark: #6b5310;
+    --key: #2b2218; --accent: #f08a5d;
   }
 }
 * { box-sizing: border-box; }
 body {
   margin: 0; background: var(--bg); color: var(--fg);
-  font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", sans-serif;
+  /* Niet system-ui/SF: dat plaatst de punt onder de P (P + U+0323) naast de letter. */
+  font: 16px/1.5 "Helvetica Neue", Arial, "Segoe UI", Roboto, "Noto Sans", sans-serif;
   padding: 0 max(16px, env(safe-area-inset-right)) env(safe-area-inset-bottom) max(16px, env(safe-area-inset-left));
 }
 main { max-width: 40rem; margin: 0 auto; padding-bottom: 3rem; }
@@ -33,8 +34,7 @@ button { font: inherit; color: inherit; touch-action: manipulation; -webkit-tap-
   min-height: 56px; padding: 0; border: 1px solid var(--line); border-radius: 10px; background: var(--key);
   font-size: 1.5rem; cursor: pointer;
 }
-.keys .mandra { background: var(--key-mandra); }
-.keys .taar { background: var(--key-taar); }
+.keys .mandra, .keys .taar { background: color-mix(in srgb, var(--accent) 13%, var(--key)); } /* dezelfde tint; de punt zegt welk octaaf */
 .keys button:active, #clear:active, .random:active { transform: scale(.96); }
 
 .random {
@@ -54,7 +54,13 @@ ol { list-style: none; padding: 0; margin: 0; }
 .line { margin: 2px 0; font-size: 1.15rem; line-height: 1.9; }
 .line b { font-size: .7rem; font-weight: 600; color: var(--muted); text-transform: uppercase; margin-right: 6px; }
 .u { display: inline-block; white-space: nowrap; margin-right: .6em; }
-mark { background: var(--mark); color: inherit; border-radius: 3px; }
+mark { background: color-mix(in srgb, var(--accent) 16%, transparent); color: inherit; }
+
+/* swar met punt: zie sw() in app.js */
+i { font-style: normal; line-height: 1; position: relative; display: inline-block; }
+i::after { content: ''; position: absolute; left: 50%; width: .12em; height: .12em; margin-left: -.06em; border-radius: 50%; background: currentColor; }
+i.lo::after { top: 1.02em; }
+i.hi::after { top: -.12em; }
 
 @media (min-width: 600px) {
   .keys button { min-height: 64px; font-size: 1.7rem; }

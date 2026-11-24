@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  segCount, split, dashed, isValid, search, count, exercise, randomSeq, parseSeq, formatSeq, swars,
+  segCount, split, searchAnywhere, fullExercise, dashed, isValid, search, count, exercise, randomSeq, parseSeq, formatSeq, swars,
 } from '../model.js';
 
 const digits = (s) => [...s].map(Number);
@@ -96,4 +96,31 @@ test('§4.9: URL', () => {
   assert.equal(parseSeq('a'.repeat(40)).length, 32);
   assert.equal(formatSeq([10, 9, 8]), 'a98');
   assert.equal(formatSeq([]), '');
+});
+
+test('overal in de heen-regel vanaf Ṗ', () => {
+  for (const s of ['010101231', '3d0', '34', '3545', '5a', '0000', '7773', 'd0', '9', 'd', '431360']) {
+    const q = parseSeq(s), res = searchAnywhere(q);
+    assert.equal(new Set(res.map((r) => r.code)).size, res.length, s);
+    assert.ok(res.length <= 8);
+    for (const r of res) {
+      assert.equal(Math.min(...r.unit), 0, `${s} ${r.code}: begint op Ṗ`);
+      const flat = fullExercise(r.unit).heen.flat();
+      assert.deepEqual(flat.slice(r.at, r.at + q.length), q, `${s} ${r.code}`);
+    }
+  }
+  // q = SRG is precies één segment (loop 012): die resultaten staan bovenaan, daarna pas de rest
+  const srg = searchAnywhere(parseSeq('345'));
+  assert.equal(srg[0].code, '012');
+  assert.deepEqual(srg.map((r) => r.tier), [...srg.map((r) => r.tier)].sort());
+  assert.ok(srg.slice(0, 4).every((r) => r.tier === 0));
+  assert.ok(searchAnywhere(parseSeq('3434')).every((r) => r.tier === 2)); // geen segment: alles over meerdere segmenten
+  assert.deepEqual(searchAnywhere(parseSeq('d')), []); // boven Ṡ komt geen oefening
+  assert.deepEqual(fullExercise([0]).heen.at(-1), [10]); // eindigt op de taar Sa
+  assert.deepEqual(searchAnywhere(parseSeq('3d0')), []); // sprong > 9 past nergens
+  assert.equal(searchAnywhere(parseSeq('9'))[0].code, '0'); // N invoeren: resultaat 0 begint toch op Ṗ
+  assert.equal(searchAnywhere(parseSeq('9'))[0].unit[0], 0);
+  const t = Date.now();
+  for (let i = 0; i < 200; i++) assert.ok(searchAnywhere(randomSeq()).length >= 1);
+  assert.ok(Date.now() - t < 5000);
 });

@@ -2,6 +2,7 @@
 // Posities 0..13 = Ṗ Ḍ Ṇ S R G M P D N Ṡ Ṙ Ġ Ṁ.
 
 export const MAX_POS = 13;
+export const TOP = 10; // oefeningen vanaf Ṗ eindigen op de taar Sa (Ṡ)
 export const MAX_LEN = 32; // maximale reekslengte (§4.9)
 const MAX_RANGE = 8; // hoogste min laagste binnen een eenheid
 const MAX_SEGS = 3;
@@ -110,6 +111,80 @@ export function search(q, limit = MAX_RESULTS) {
   return out;
 }
 
+// ---- zoeken overal in de heen-regel, vanaf Ṗ (uitbreiding op §4.5 en §4.7, gekozen door de eigenaar) ----
+// Elke oefening begint met haar laagste noot op Ṗ en loopt omhoog tot de rand van het bereik.
+// Een reeks past als hij ergens in die heen-regel staat; de ingevoerde hoogte bepaalt dus niet waar de oefening begint.
+
+const WORK_BUDGET = 100000; // shortcut: vast aantal knopen (geen tijd) houdt de uitkomst voor iedereen gelijk; verhogen als treffers ontbreken
+const EDGE = TOP + 1; // aantal herhalingen waarna de heen-regel zeker stopt
+// De volledige oefening vanaf Ṗ tot en met Ṡ.
+export const fullExercise = (u) => exercise(u, 1, EDGE, TOP);
+const heenFlat = (u) => fullExercise(u).heen.flat();
+const allAt = (s, q) => { const r = []; for (let i = 0; i + q.length <= s.length; i++) if (q.every((x, j) => s[i + j] === x)) r.push(i); return r; };
+const LOW = Array.from({ length: MAX_RANGE + 1 }, (_, p) => p);
+
+// Alle geldige eenheden van lengte n (posities 0..8) met op de vaste plekken in `fixed` die waarde (null = vrij).
+function fill(fixed, n, st, emit) {
+  const u = [];
+  const go = (i) => {
+    if (i === n) { emit(u.slice()); return; }
+    for (const v of fixed[i] === null ? LOW : [fixed[i]]) {
+      if (st.budget-- <= 0) return;
+      u.push(v);
+      if (isValid(u)) go(i + 1);
+      u.pop();
+    }
+  };
+  go(0);
+}
+
+// Hoe ligt q (len noten, vanaf index `at` in de heen-regel) ten opzichte van de segmenten `parts` van een eenheid met n noten?
+// 0 = q is precies één segment, 1 = q zit binnen één segment, 2 = q loopt over meerdere segmenten of over de herhaling heen.
+function tierOf(parts, n, at, len) {
+  const i0 = at % n, i1 = (at + len - 1) % n;
+  if (Math.floor(at / n) !== Math.floor((at + len - 1) / n)) return 2;
+  let start = 0;
+  for (const p of parts) {
+    const end = start + p.length;
+    if (i0 < end) return i1 >= end ? 2 : i0 === start && len === p.length ? 0 : 1;
+    start = end;
+  }
+}
+
+// Eerste `limit` oefeningen (laagste noot op Ṗ) waarvan de heen-regel q bevat.
+// Volgorde: eerst hoe q in de segmenten ligt (tier, zie tierOf), dan simpel -> complex (rank).
+// `at` = index van q in de uitgeschreven heen-regel (bij meerdere plekken de beste tier, dan de eerste).
+export function searchAnywhere(q, limit = MAX_RESULTS) {
+  // Opeenvolgende noten in een heen-regel liggen tussen 8 lager en 9 hoger.
+  if (!q.length || q.some((x, i) => x > TOP || (i && (x - q[i - 1] > 9 || q[i - 1] - x > 8)))) return [];
+  const st = { budget: WORK_BUDGET }, pool = [];
+  // Is q zelf één segment, dan kan tier 0 bestaan: zoek door tot er genoeg zijn. Anders is alles tier 2 en telt alleen de lengte.
+  const wantTier = segCount(q) === 1 ? 0 : 2;
+  const enough = () => pool.filter((c) => c.tier <= wantTier).length >= limit;
+  for (let n = 1; n <= 27 && !enough() && st.budget > 0; n++) {
+    const level = new Map();
+    for (let o = 0; o + q.length <= EDGE * n; o++) {
+      const fixed = Array(n).fill(null);
+      const ok = q.every((x, j) => {
+        const idx = (o + j) % n, v = x - Math.floor((o + j) / n);
+        if (v < 0 || v > MAX_RANGE || (fixed[idx] !== null && fixed[idx] !== v)) return false;
+        fixed[idx] = v;
+        return true;
+      });
+      if (ok) fill(fixed, n, st, (u) => { if (Math.min(...u) === 0) level.set(u.join(), u); });
+    }
+    for (const u of level.values()) {
+      const parts = split(u);
+      const hits = allAt(heenFlat(u), q).map((at) => ({ at, tier: tierOf(parts, n, at, q.length) }));
+      if (!hits.length) continue;
+      const best = hits.reduce((a, h) => (h.tier < a.tier ? h : a));
+      pool.push({ unit: u, code: dashed(u), key: rank(u), at: best.at, tier: best.tier });
+    }
+  }
+  pool.sort((a, b) => a.tier - b.tier || compareRank(a.key, b.key));
+  return pool.slice(0, limit).map(({ unit, code, at, tier }) => ({ unit, code, at, tier }));
+}
+
 // Totaal aantal passende eenheden (alleen voor tests; loopt de hele boom door).
 export function count(q) {
   let total = 0;
@@ -125,12 +200,12 @@ export function count(q) {
 
 // ---- uitgeschreven oefening (§4.7) ----
 
-// heen: eenheid + telkens één swar verder (max 8 eenheden, stop bij de rand); terug: omgekeerd, per eenheid gespiegeld.
-export function exercise(u, dir) {
+// heen: eenheid + telkens één swar verder (max `cap` eenheden, stop bij de rand); terug: omgekeerd, per eenheid gespiegeld.
+export function exercise(u, dir, cap = 8, top = MAX_POS) {
   const heen = [];
-  for (let k = 0; k < 8; k++) {
+  for (let k = 0; k < cap; k++) {
     const v = u.map((x) => x + dir * k);
-    if (Math.min(...v) < 0 || Math.max(...v) > MAX_POS) break;
+    if (Math.min(...v) < 0 || Math.max(...v) > top) break;
     heen.push(v);
   }
   const terug = heen.map((v) => { const m = Math.min(...v) + Math.max(...v); return v.map((x) => m - x); }).reverse();
@@ -143,7 +218,7 @@ export function randomSeq(rnd = Math.random) {
   const len = 3 + Math.floor(rnd() * 4), q = [];
   while (q.length < len) {
     const lo = q.length ? Math.min(...q) : 0, hi = q.length ? Math.max(...q) : 0;
-    const ok = Array.from({ length: MAX_POS + 1 }, (_, p) => p).filter((p) => Math.max(hi, p) - Math.min(lo, p) <= MAX_RANGE);
+    const ok = Array.from({ length: TOP + 1 }, (_, p) => p).filter((p) => Math.max(hi, p) - Math.min(lo, p) <= MAX_RANGE);
     q.push(ok[Math.floor(rnd() * ok.length)]);
   }
   return q;
