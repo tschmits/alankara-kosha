@@ -112,7 +112,8 @@ i.hi::after { top: -.18em; }
   .tabs, #search-view, .coll-tools, .act, #guru-links { display: none !important; }
   .print-only { display: block; }
   body { min-height: 0; }
-  .foot { margin-top: 8mm; padding-top: 3mm; font-size: 8pt; break-inside: avoid; }
+  .foot { margin-top: 6mm; padding-top: 2mm; font-size: 5.5pt; line-height: 1.3; break-inside: avoid; }
+  .foot p { margin: .6mm 0; }
   .foot a, #guru { color: inherit; }
   .orn::before, .orn::after { background: none; height: 0; border-top: 1px solid var(--accent); } /* achtergronden worden niet geprint */
   #coll-view[hidden] { display: block !important; }
